@@ -27,7 +27,7 @@ A Next.js application that converts text to speech using Google Cloud Text-to-Sp
    GOOGLE_APPLICATION_CREDENTIALS=./tts-creds.json
    GOOGLE_PROJECT_ID=your-project-id
    GOOGLE_API_KEY=your_google_api_key_here
-   APP_PASSWORD=hellfire@asdf
+   APP_PASSWORD=password
    ```
    
    **Note:** `APP_PASSWORD` is the password required to access the application. Change it to your preferred password.
