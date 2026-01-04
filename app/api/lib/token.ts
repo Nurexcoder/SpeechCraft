@@ -9,11 +9,19 @@ const tokenStore = new Map<string, TokenData>();
 // Clean up expired tokens periodically
 setInterval(() => {
   const now = Date.now();
-  for (const [token, data] of tokenStore.entries()) {
+  const tokensToDelete: string[] = [];
+  
+  // Collect expired tokens
+  tokenStore.forEach((data, token) => {
     if (data.expiresAt < now) {
-      tokenStore.delete(token);
+      tokensToDelete.push(token);
     }
-  }
+  });
+  
+  // Delete expired tokens
+  tokensToDelete.forEach(token => {
+    tokenStore.delete(token);
+  });
 }, 60000); // Clean up every minute
 
 export function storeToken(token: string, expiresAt: number): void {

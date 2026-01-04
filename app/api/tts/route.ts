@@ -132,23 +132,43 @@ export async function POST(request: NextRequest) {
       // Google Cloud TTS requires service account authentication for server-side usage
       const clientOptions: any = {};
       
-      // Option 1: Use service account key file
-      if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-        clientOptions.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-      }
-      
-      // Option 2: Use service account JSON from environment variable
+      // Option 1: Use service account JSON from environment variable (preferred - no file needed)
       if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
         try {
           clientOptions.credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
         } catch (e) {
           console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT_KEY');
+          return new Response(
+            JSON.stringify({ error: 'Invalid GOOGLE_SERVICE_ACCOUNT_KEY format' }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
         }
       }
       
-      // Option 3: Use project ID (client will try to use default credentials)
+      // Option 2: Use service account key file (fallback)
+      if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        clientOptions.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+      }
+      
+      // Use project ID if provided
       if (process.env.GOOGLE_PROJECT_ID) {
         clientOptions.projectId = process.env.GOOGLE_PROJECT_ID;
+      }
+      
+      // Ensure we have credentials
+      if (!clientOptions.credentials && !clientOptions.keyFilename) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Google Cloud credentials not configured. Please set GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_APPLICATION_CREDENTIALS' 
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
       }
       
       const client = new TextToSpeechClient(clientOptions);

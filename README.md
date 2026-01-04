@@ -24,13 +24,15 @@ A Next.js application that converts text to speech using Google Cloud Text-to-Sp
    
    Create a `.env.local` file in the root directory and add:
    ```
-   GOOGLE_APPLICATION_CREDENTIALS=./tts-creds.json
+   GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"...","private_key":"..."}
    GOOGLE_PROJECT_ID=your-project-id
    GOOGLE_API_KEY=your_google_api_key_here
    APP_PASSWORD=hellfire@asdf
    ```
    
-   **Note:** `APP_PASSWORD` is the password required to access the application. Change it to your preferred password.
+   **Note:** 
+   - `APP_PASSWORD` is the password required to access the application. Change it to your preferred password.
+   - `GOOGLE_SERVICE_ACCOUNT_KEY` should contain the entire JSON content from your service account key file (see setup guide below).
 
 3. **Run the development server:**
    ```bash
@@ -45,7 +47,7 @@ A Next.js application that converts text to speech using Google Cloud Text-to-Sp
 
 Google Cloud Text-to-Speech API requires service account authentication for server-side usage. API keys alone won't work.
 
-### Option 1: Service Account (Recommended)
+### Setup Steps (No JSON File Required)
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
@@ -59,27 +61,23 @@ Google Cloud Text-to-Speech API requires service account authentication for serv
 10. Go to the **Keys** tab
 11. Click **Add Key** > **Create new key**
 12. Choose **JSON** format and download the key file
-13. Save the JSON file securely in your project (e.g., `google-credentials.json`)
-14. Add to `.env.local`:
+13. **Open the downloaded JSON file** and copy its entire contents
+14. Add to `.env.local` as a single line (remove all line breaks):
     ```
-    GOOGLE_APPLICATION_CREDENTIALS=./google-credentials.json
+    GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"your-project-id","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...","client_id":"...","auth_uri":"...","token_uri":"...","auth_provider_x509_cert_url":"...","client_x509_cert_url":"..."}
     GOOGLE_PROJECT_ID=your-project-id
     GOOGLE_API_KEY=your-api-key-for-gemini
+    APP_PASSWORD=hellfire@asdf
     ```
 
-### Option 2: Service Account Key as Environment Variable
+**Important Notes:**
+- Copy the entire JSON content from the downloaded file
+- Remove all line breaks and format it as a single line in `.env.local`
+- Keep the JSON file secure and do NOT commit it to Git
+- The `GOOGLE_API_KEY` is needed for Gemini preprocessing
+- The service account credentials are required for Text-to-Speech
 
-Instead of a file, you can store the service account JSON as an environment variable:
-
-1. Follow steps 1-11 from Option 1
-2. Copy the entire contents of the JSON file
-3. Add to `.env.local`:
-    ```
-    GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"...","private_key":"..."}
-    GOOGLE_API_KEY=your-api-key-for-gemini
-    ```
-
-**Note:** The `GOOGLE_API_KEY` is still needed for Gemini preprocessing. The service account is required for Text-to-Speech.
+**Alternative:** If you prefer using a file, you can use `GOOGLE_APPLICATION_CREDENTIALS=./path/to/file.json` instead, but the environment variable approach is recommended as it doesn't require managing files.
 
 ## Usage
 
