@@ -27,7 +27,7 @@ A Next.js application that converts text to speech using Google Cloud Text-to-Sp
    GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"...","private_key":"..."}
    GOOGLE_PROJECT_ID=your-project-id
    GOOGLE_API_KEY=your_google_api_key_here
-   APP_PASSWORD=hellfire@asdf
+   APP_PASSWORD=password
    ```
    
    **Note:** 
